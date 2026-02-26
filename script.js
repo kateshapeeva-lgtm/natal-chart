@@ -1,4 +1,5 @@
 const API_BASE = 'https://natal-chart-backend-6nxr.onrender.com';
+
 const form = document.getElementById('natal-form');
 const timeUnknownCheckbox = document.getElementById('time-unknown');
 const timeInput = document.getElementById('birth-time');
@@ -27,7 +28,7 @@ timeUnknownCheckbox.addEventListener('change', () => {
   }
 });
 
-form.addEventListener('submit', (event) => {
+form.addEventListener('submit', async (event) => {
   event.preventDefault();
   formError.hidden = true;
   formError.textContent = '';
@@ -40,6 +41,13 @@ form.addEventListener('submit', (event) => {
     ? ''
     : (formData.get('birthTime') || '').toString();
   const birthPlace = (formData.get('birthPlace') || '').toString().trim();
+  const latRaw = formData.get('lat');
+  const lonRaw = formData.get('lon');
+  const tzRaw = formData.get('tzOffset');
+
+  const latitude = latRaw !== null && latRaw !== '' ? Number(latRaw) : null;
+  const longitude = lonRaw !== null && lonRaw !== '' ? Number(lonRaw) : null;
+  const tzOffsetHours = tzRaw !== null && tzRaw !== '' ? Number(tzRaw) : null;
 
   if (!birthDate || !birthPlace) {
     showFormError('Пожалуйста, заполни дату и место рождения.');
@@ -48,7 +56,9 @@ form.addEventListener('submit', (event) => {
 
   const parsed = safeParseDateTime(birthDate, birthTime);
   if (!parsed) {
-    showFormError('Дата или время рождения выглядят странно. Проверь, пожалуйста, ещё раз.');
+    showFormError(
+      'Дата или время рождения выглядят странно. Проверь, пожалуйста, ещё раз.'
+    );
     return;
   }
 
@@ -63,7 +73,11 @@ form.addEventListener('submit', (event) => {
     createdAt: new Date().toISOString(),
   };
 
-  const chart = buildSimplifiedChart(profile, parsed);
+  const chart = await calculateChart(profile, parsed, {
+    latitude,
+    longitude,
+    tzOffsetHours,
+  });
 
   renderChart(chart);
   renderInterpretation(profile, chart);
@@ -100,6 +114,59 @@ function safeParseDateTime(dateStr, timeStr) {
     return { date, year, month, day, hours, minutes };
   } catch {
     return null;
+  }
+}
+
+async function calculateChart(profile, parsed, extras) {
+  const coordsComplete =
+    extras &&
+    typeof extras.latitude === 'number' &&
+    typeof extras.longitude === 'number' &&
+    typeof extras.tzOffsetHours === 'number';
+
+  if (!coordsComplete || !API_BASE) {
+    return buildSimplifiedChart(profile, parsed);
+  }
+
+  try {
+    const body = {
+      name: profile.name,
+      birth_date: profile.birthDate,
+      birth_time: profile.birthTime,
+      time_unknown: profile.timeUnknown,
+      latitude: extras.latitude,
+      longitude: extras.longitude,
+      tz_offset_hours: extras.tzOffsetHours,
+    };
+
+    const res = await fetch(`${API_BASE}/api/natal-chart/calculate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      console.warn('Backend расчет не удался:', res.status, await res.text());
+      return buildSimplifiedChart(profile, parsed);
+    }
+
+    const data = await res.json();
+
+    return {
+      sunSign: data.sun_sign,
+      moonSign: data.moon_sign,
+      ascendantSign: data.ascendant_sign,
+      planets: data.planets.map((p) => ({
+        name: p.name,
+        key: p.name === 'Солнце' ? 'sun' : p.name === 'Луна' ? 'moon' : 'other',
+        sign: p.sign,
+      })),
+      aspects: [],
+      profile,
+    };
+  } catch (err) {
+    console.warn('Backend недоступен, используем упрощенный расчет:', err);
+    return buildSimplifiedChart(profile, parsed);
   }
 }
 
@@ -239,9 +306,7 @@ function buildSummaryText(profile, chart) {
   return `
     <h4>Общая картинка про тебя</h4>
     <p>
-      ${name} родилась с Солнцем в знаке ${chart.sunSign} и Луной в знаке ${
-    chart.moonSign
-  }.
+      ${name} родилась с Солнцем в знаке ${chart.sunSign} и Луной в знаке ${chart.moonSign}.
       Это уже даёт очень особенную смесь твоей «внешней» энергии и внутреннего мира.
     </p>
     <p>
@@ -508,6 +573,3 @@ function scrollToElement(element) {
 }
 
 renderSavedCharts();
-
-
-
