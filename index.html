@@ -81,9 +81,36 @@
                 <p class="field-hint">
                   Для прототипа можно ввести город вручную. Интеграцию с картами
                   добавим позже.
-                </p>
-              </div>
-            </div>
+<div class="form-field form-field-full">
+  <label>Координаты и часовой пояс (для точности, можно подсмотреть в карте)</label>
+  <div class="coords-row">
+    <input
+      id="lat"
+      name="lat"
+      type="number"
+      step="0.000001"
+      placeholder="Широта, например 55.7558"
+    />
+    <input
+      id="lon"
+      name="lon"
+      type="number"
+      step="0.000001"
+      placeholder="Долгота, например 37.6176"
+    />
+    <input
+      id="tz-offset"
+      name="tzOffset"
+      type="number"
+      step="0.5"
+      placeholder="Часовой пояс, например 3 для UTC+3"
+    />
+  </div>
+  <p class="field-hint">
+    Если оставить эти поля пустыми, расчёт будет немного более общим и приблизительным.                  
+       </p>
+        </div>
+        
             <div class="form-actions">
               <button type="submit" class="btn btn-primary">
                 Рассчитать карту
@@ -167,4 +194,5 @@
     <script src="./script.js"></script>
   </body>
 </html>
+
 
