@@ -1,4 +1,4 @@
-const API_BASE = 'https://natal-chart-backend-y2fj.onrender.com';
+const API_BASE = 'https://natal-chart-backend-6nxr.onrender.com';
 const form = document.getElementById('natal-form');
 const timeUnknownCheckbox = document.getElementById('time-unknown');
 const timeInput = document.getElementById('birth-time');
@@ -508,5 +508,6 @@ function scrollToElement(element) {
 }
 
 renderSavedCharts();
+
 
 
