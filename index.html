@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Натальная карта онлайн</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="logo">Натальная карта</div>
+        <nav class="main-nav">
+          <a href="#calculator">Рассчитать</a>
+          <a href="#saved">Мои карты</a>
+          <a href="#about">О сервисе</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="container hero-inner">
+          <div class="hero-text">
+            <h1>Твоя натальная карта простым языком</h1>
+            <p>
+              Введи дату, время и место рождения — и получи мягкую, дружескую
+              расшифровку своей натальной карты, как будто подруга делится
+              своими наблюдениями.
+            </p>
+            <a class="btn btn-primary" href="#calculator">Рассчитать карту</a>
+          </div>
+          <div class="hero-card">
+            <div class="hero-circle"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="calculator" class="section">
+        <div class="container">
+          <h2>Расчёт натальной карты</h2>
+          <p class="section-subtitle">
+            Заполни несколько полей, остальное мы сделаем сами.
+          </p>
+          <form id="natal-form" class="card form-card">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="name">Имя (как тебе удобно)</label>
+                <input id="name" name="name" type="text" placeholder="Например, Аня" />
+              </div>
+              <div class="form-field">
+                <label for="gender">Пол (по желанию)</label>
+                <select id="gender" name="gender">
+                  <option value="">Не указывать</option>
+                  <option value="female">Женский</option>
+                  <option value="male">Мужской</option>
+                  <option value="other">Другой</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="birth-date">Дата рождения *</label>
+                <input id="birth-date" name="birthDate" type="date" required />
+              </div>
+              <div class="form-field">
+                <label for="birth-time">Время рождения</label>
+                <input id="birth-time" name="birthTime" type="time" />
+                <label class="checkbox-inline">
+                  <input id="time-unknown" type="checkbox" />
+                  Время неизвестно
+                </label>
+              </div>
+              <div class="form-field form-field-full">
+                <label for="birth-place">Место рождения *</label>
+                <input
+                  id="birth-place"
+                  name="birthPlace"
+                  type="text"
+                  placeholder="Город, страна"
+                  required
+                />
+                <p class="field-hint">
+                  Для прототипа можно ввести город вручную. Интеграцию с картами
+                  добавим позже.
+                </p>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">
+                Рассчитать карту
+              </button>
+              <p class="form-note">
+                * Поля с звёздочкой обязательны. Мы ничего никуда не отправляем —
+                все расчёты выполняются прямо в браузере.
+              </p>
+            </div>
+            <div id="form-error" class="form-error" hidden></div>
+          </form>
+        </div>
+      </section>
+
+      <section id="result" class="section section-muted" hidden>
+        <div class="container">
+          <h2>Твоя натальная карта</h2>
+          <div class="result-layout">
+            <div class="card chart-card">
+              <h3>Карта</h3>
+              <canvas id="chart-canvas" width="400" height="400"></canvas>
+              <p class="field-hint">
+                Для первой версии используется упрощённая схема карты. Позже её
+                можно заменить на точный астрологический движок.
+              </p>
+            </div>
+            <div class="card interpretation-card">
+              <h3>Разбор простым языком</h3>
+              <div id="summary-block" class="interpretation-block"></div>
+              <div id="planets-block" class="interpretation-block"></div>
+              <div id="aspects-block" class="interpretation-block"></div>
+              <div class="interpretation-actions">
+                <button id="save-chart" class="btn btn-secondary">
+                  Сохранить эту карту
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="saved" class="section">
+        <div class="container">
+          <h2>Мои карты</h2>
+          <p class="section-subtitle">
+            Здесь хранятся карты, которые ты сохранила на этом устройстве.
+          </p>
+          <div id="saved-list" class="card saved-card">
+            <p class="empty-state">Пока здесь пусто. Сначала рассчитай свою карту.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="section section-muted">
+        <div class="container">
+          <h2>О сервисе</h2>
+          <div class="card about-card">
+            <p>
+              Этот сайт создан для того, чтобы познакомить тебя с натальной картой
+              без сложных терминов и страшных прогнозов. Всё, что ты увидишь в
+              разборе, — это скорее мягкие подсказки и описания твоих привычных
+              реакций, а не приговор.
+            </p>
+            <p>
+              Сейчас расчёты сделаны в упрощённом виде и не претендуют на роль
+              профессиональной консультации астролога. Зато они легко читаются и
+              помогают прислушаться к себе.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <span>Натальная карта онлайн</span>
+        <span class="footer-note">Все данные остаются только у тебя в браузере.</span>
+      </div>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
+
